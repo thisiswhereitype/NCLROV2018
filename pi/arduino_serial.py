@@ -8,4 +8,5 @@ while True:
 	ser.write(message)
 	print("Sent message: "+message)
 	time.sleep(5)
+	print(ser.readline())
 	#ser.close()
