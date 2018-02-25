@@ -7,6 +7,4 @@ message = b'test'
 while True:
 	ser.write(message)
 	print("Sent message: "+message.decode("utf-8"))
-	time.sleep(5)
 	print(ser.readline())
-	#ser.close()
