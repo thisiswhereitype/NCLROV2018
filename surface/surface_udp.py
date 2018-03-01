@@ -22,7 +22,7 @@ outputArray[8][0]="ForeLamp" #LED for illuminating surroundings
 #Set up UDP
 UDP_IP = "169.254.116.33" #This needs to be the Pi's IP
 UDP_PORT = 5005
-MESSAGE = "Hello"
+MESSAGE = "Hello World (UDP success)"
 
 #Output UDP settings
 print ("UDP target IP:", UDP_IP)
@@ -51,3 +51,10 @@ while True:
         currentValue=outputArray[i][1]
         sock.sendto(bytes(str(currentValue), "utf-8"), (UDP_IP, UDP_PORT))
         print("Sent data: "+str(outputArray[i][0])+" value: "+str(outputArray[i][1]))
+
+    #Test to turn LED on and off
+    time.sleep(1)
+    if(outputArray[8][1]==0):
+        outputArray[8][1] = 1
+    else:
+        outputArray[8][1] = 0
