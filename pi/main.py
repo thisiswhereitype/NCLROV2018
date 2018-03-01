@@ -33,4 +33,4 @@ while True:
         print ((inputArray[i][0]),":",inputArray[i][1])
 
         #Send to arduino
-        ser.write(inputArray[i][1])
+    ser.write(inputArray[8][1].encode("utf-8"))
