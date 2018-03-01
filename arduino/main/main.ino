@@ -23,16 +23,18 @@ void loop() {
     //incomingString = Serial.readString().toCharArray();
     incomingString = Serial.readString();
 
-//    if(incomingString=="test"){
-//      digitalWrite(LED_BUILTIN, HIGH);
-//      delay(1000);
-//      digitalWrite(LED_BUILTIN, LOW);
-//    }
+    if(incomingString.toInt()==1){
+      digitalWrite(LED_BUILTIN, HIGH);
+    }
+    else{
+      digitalWrite(LED_BUILTIN, LOW);
+    }
 
     // say what you got:
     delay(5); //Delay to allow some time for the arduino to actually read the data
     
     Serial.print("I received: ");
     Serial.println(incomingString);
+
   }
 }
