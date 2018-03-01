@@ -1,8 +1,8 @@
 import socket
 import time
 
-UDP_IP = "169.254.89.200"
-UDP_PORT = 8888
+UDP_IP = "169.254.116.33" #This needs to be the Pi's IP
+UDP_PORT = 5005
 #MESSAGE = b'2000'
 MESSAGE = "Hello"
 
@@ -18,9 +18,11 @@ sock = socket.socket(socket.AF_INET, # Internet
 #sock.sendto(bytes(MESSAGE, "utf-8"), (UDP_IP, UDP_PORT))
 
 #sock.bind((UDP_IP, UDP_PORT))
-
+count=1
 while True:
     time.sleep(1)
     sock.sendto(bytes(MESSAGE, "utf-8"), (UDP_IP, UDP_PORT))
     #data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
     #print ("received message:", data)
+    print(count)
+    count=count+1
