@@ -1,23 +1,26 @@
 import socket
 
-UDP_IP = "169.254.89.200"
-UDP_PORT = 8888
-#MESSAGE = b'2000'
-MESSAGE = "Hello"
+UDP_IP = "169.254.116.33" #The Pi's IP
+UDP_PORT = 5005 #The port we're using
 
+#Set up UDP
+sock = socket.socket(socket.AF_INET, #internet
+                     socket.SOCK_DGRAM) #UDP
+sock.bind((UDP_IP, UDP_PORT))
 
-print ("UDP target IP:", UDP_IP)
-print ("UDP target port:", UDP_PORT)
-print ("message:", MESSAGE)
+#Set up array initially
+data, addr = sock.recvfrom(1024) #Receive array height
+ARRAYWIDTH = 2
+ARRAYHEIGHT= int(data)
+inputArray = [[0 for x in range(ARRAYWIDTH)] for y in range(ARRAYHEIGHT)] #define input array
+for i in range(ARRAYHEIGHT): #Fill array with string values relating to what each incoming value represents
+    data, addr = sock.recvfrom(1024)
+    inputArray[i][0] = data.decode("utf-8")
 
-sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
-#sock.bind((UDP_IP, UDP_PORT))
-#sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
-sock.sendto(bytes(MESSAGE, "utf-8"), (UDP_IP, UDP_PORT))
-
-#sock.bind((UDP_IP, UDP_PORT))
 
 while True:
-    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-    print ("received message:", data)
+    #Print out received values and record them in the array
+    for i in range(ARRAYHEIGHT):
+        data, addr = sock.recvfrom(1024)
+        inputArray[i][1] = data.decode("utf-8") #Update current value
+        print ((inputArray[i][0]),":",inputArray[i][1])
