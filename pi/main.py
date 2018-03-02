@@ -30,11 +30,26 @@ for i in range(ARRAYHEIGHT): #Fill array with string values relating to what eac
 while True:
     #Print out received values and record them in the array
     print("===RECIEVED SURFACE DATA:===")
-    for i in range(ARRAYHEIGHT):
+    i=0
+    while i<ARRAYHEIGHT:
         data, addr = sock.recvfrom(1024)
+        if (data.decode("utf-8") == "11111" and i!=0):
+            #If value 11111111 found anywhere other than position 0, reset to position 0
+            print("Data sync error from surface. Current position reset to 0.")
+            i=0
         inputArray[i][1] = data.decode("utf-8") #Update current value
         print ((inputArray[i][0]),":",inputArray[i][1])
+        i+=1 #Increment i
+        
+##    for i in range(ARRAYHEIGHT):
+##        data, addr = sock.recvfrom(1024)
+##        if (data.decode("utf-8") == "11111111" and i!=0):
+##            #If value 11111111 found anywhere other than position 0, reset to position 0
+##            print("Data sync error from surface. Current position reset to 0.")
+##            i=0
+##        inputArray[i][1] = data.decode("utf-8") #Update current value
+##        print ((inputArray[i][0]),":",inputArray[i][1])
     for i in range(ARRAYHEIGHT):
         #Send to arduino
-        ser.write(inputArray[i][1].encode("utf-8"))
-        print("Arduino response:",ser.readline().decode("utf-8"))
+        ser.write((inputArray[i][1]+"\n").encode("utf-8"))
+        #print("Arduino response:",ser.readline().decode("utf-8"))
