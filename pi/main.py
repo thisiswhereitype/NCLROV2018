@@ -1,6 +1,6 @@
 #This program handles the majority of the Raspberry Pi's processing for communication between the surface and ROV
 #It's using separate threads for surface-Pi communication and Pi-Arduino communication
-#Both threads use the global arrays for inputs and outputs (OUTPUTS NOT YET IMPLEMENTED)
+#Both threads use the global arrays for inputs and outputs
 
 from threading import Thread
 import socket
@@ -82,7 +82,6 @@ def arduino_comm_a(thread_name):
             ser.write((output_array[i][1] + "\n").encode("utf-8"))
             i += 1  # Increment i
             time.sleep(0.01)
-            #time.sleep(1)
             
         #Get arduino sensor data
         i = 0
@@ -100,7 +99,7 @@ def arduino_comm_a(thread_name):
 
 def print_to_console(thread_name):
     while True:
-        time.sleep(1)#Print to console every 0.1 seconds
+        time.sleep(1)
         print("===RECIEVED SURFACE DATA:===")
         for i in range(OUTPUT_ARRAY_HEIGHT):
             print(i,(output_array[i][0]), ":", output_array[i][1])

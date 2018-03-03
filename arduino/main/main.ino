@@ -37,12 +37,6 @@ void loop() {
     
     outputArray[arrayPointer]= currentValue;
 
-    // say what you got: 
-    //Serial.print("[");
-    //Serial.print(arrayPointer);
-  //  Serial.print("]");
-//    Serial.println(inputString); //FOR DEBUGGING ONLY
-
     if (arrayPointer==(OUTPUT_ARRAY_SIZE-1)){
       arrayPointer = 0; //Reset arraypointer if it's reached the maximum array position
       sendComplete = false; //Send back input values once all output values have been received
@@ -82,8 +76,6 @@ void loop() {
  //==============================================/CONTROL_OUTPUTS===========================================
 
 }
-
-
 
 /*
   SerialEvent occurs whenever a new data comes in the hardware serial RX. This
