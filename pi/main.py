@@ -51,9 +51,17 @@ def surface_comm(thread_name):
 def arduino_comm_a(thread_name):
     global output_array #Allow writing to output_array
     while True:
-        #Read surface data
+        #Send surface data to arduino
         i = 0
         while i < OUTPUT_ARRAY_HEIGHT:
+            # Send to arduino
+            ser.write((output_array[i][1] + "\n").encode("utf-8"))
+            i += 1  # Increment i
+            time.sleep(0.01)
+            
+        #Get arduino sensor data
+        i = 0
+        while i < :
             # Send to arduino
             ser.write((output_array[i][1] + "\n").encode("utf-8"))
             i += 1  # Increment i
