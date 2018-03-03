@@ -24,21 +24,23 @@ print("Waiting for array initialisation data from surface.")
 data, addr = sock.recvfrom(1024) #Receive array height
 OUTPUT_ARRAY_WIDTH = 2
 OUTPUT_ARRAY_HEIGHT= int(data)
-print("Array is",OUTPUT_ARRAY_HEIGHT,"rows tall")
+print("Output array is",OUTPUT_ARRAY_HEIGHT,"rows tall")
 output_array = [[0 for x in range(OUTPUT_ARRAY_WIDTH)] for y in range(OUTPUT_ARRAY_HEIGHT)] #define output array
 for i in range(OUTPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
     data, addr = sock.recvfrom(1024)
     output_array[i][0] = data.decode("utf-8")
+    print("Label",str(i),":",output_array[i][0])
 
 #Set up input array initially using received size and labels from the surface
 data, addr = sock.recvfrom(1024) #Receive array height
 INPUT_ARRAY_WIDTH = 2
 INPUT_ARRAY_HEIGHT= int(data)
-print("Array is",INPUT_ARRAY_HEIGHT,"rows tall")
+print("Input array is",INPUT_ARRAY_HEIGHT,"rows tall")
 input_array = [[0 for x in range(INPUT_ARRAY_WIDTH)] for y in range(INPUT_ARRAY_HEIGHT)] #define input array
 for i in range(INPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
     data, addr = sock.recvfrom(1024)
     input_array[i][0] = data.decode("utf-8")
+    print("Label",str(i),":",input_array[i][0])
 
 #Reading and writing data to/from the surface via UDP
 def surface_comm(thread_name):
@@ -68,17 +70,20 @@ def arduino_comm_a(thread_name):
             ser.write((output_array[i][1] + "\n").encode("utf-8"))
             i += 1  # Increment i
             time.sleep(0.01)
+            #time.sleep(1)
             
         #Get arduino sensor data
         i = 0
         while i < INPUT_ARRAY_HEIGHT:
             # get current value
-            input_array[i]=ser.readline()
+            input_array[i][1]=(ser.readline().decode("utf-8"))
+            #print(">>>>>>>>>Writing",input_array[i][1],"to position",i) #For debugging
             i += 1  # Increment i
+            
 
 def print_to_console(thread_name):
     while True:
-        time.sleep(0.1)#Print to console every 0.1 seconds
+        time.sleep(1)#Print to console every 0.1 seconds
         print("===RECIEVED SURFACE DATA:===")
         for i in range(OUTPUT_ARRAY_HEIGHT):
             print(i,(output_array[i][0]), ":", output_array[i][1])
