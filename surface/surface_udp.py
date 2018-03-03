@@ -65,10 +65,18 @@ while True:
     print(count)
     count=count+1
     output_array[1][1]=count #Increment thruster 1 value for testing
+
+    #Send output array down to ROV
     for i in range(0, OUTPUT_ARRAY_HEIGHT):
         current_value=output_array[i][1]
         sock.sendto(bytes(str(current_value), "utf-8"), (UDP_IP, UDP_PORT))
         print("Sent data: "+str(output_array[i][0])+" value: "+str(output_array[i][1]))
+
+    # Get sensor data from ROV
+    for i in range(0, INPUT_ARRAY_HEIGHT):
+        input_array[1][1] = data, addr = sock.recvfrom(1024)
+        print("Received data: " + str(input_array[i][0]) + " value: " + str(input_array[i][1]))
+
 
     #Test to turn LED on and off
     time.sleep(1)

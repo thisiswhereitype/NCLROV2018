@@ -58,6 +58,9 @@ def surface_comm(thread_name):
             output_array[i][1] = data.decode("utf-8")  # Update current value in the input array
             #print((output_array[i][0]), ":", output_array[i][1]) #DEBUG: output received value
             i += 1  # Increment i
+        #Send ROV sensor data back to surface
+        for i in range(0, INPUT_ARRAY_HEIGHT):
+            sock.sendto(bytes(str(input_array[1][i]), "utf-8"), (UDP_IP, UDP_PORT))
 
 #Reading and writing data to/from the Arduino via USB
 def arduino_comm_a(thread_name):
