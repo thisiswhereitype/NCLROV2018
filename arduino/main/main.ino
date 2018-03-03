@@ -50,7 +50,7 @@ void loop() {
 
 
 
-  if(inputArray[8]==1){
+  if(inputArray[9]==1){
       digitalWrite(LED_BUILTIN, HIGH);
     }
     else{
