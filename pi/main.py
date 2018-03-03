@@ -1,55 +1,74 @@
+#This program handles the majority of the Raspberry Pi's processing for communication between the surface and ROV
+#It's using separate threads for surface-Pi communication and Pi-Arduino communication
+#Both threads use the global arrays for inputs and outputs (OUTPUTS NOT YET IMPLEMENTED)
+
+from threading import Thread
 import socket
 import serial
 import time
 
-#Set up serial output for arduino
+#Set up serial IO for arduino
 ser = serial.Serial('/dev/ttyACM0',115200)
 print("Serial connected:", ser.name)
 
+#Set up UDP IO for surface
 UDP_IP = "169.254.116.33" #The Pi's IP
 UDP_PORT = 5005 #The port we're using
-
-#Set up UDP
 sock = socket.socket(socket.AF_INET, #internet
                      socket.SOCK_DGRAM) #UDP
 sock.bind((UDP_IP, UDP_PORT))
 print("UDP connected:",UDP_IP," Port:",UDP_PORT)
 
-#Set up array initially
+#Set up array initially using received size and labels from the surface
 print("Waiting for array initialisation data from surface.")
 data, addr = sock.recvfrom(1024) #Receive array height
-ARRAYWIDTH = 2
-ARRAYHEIGHT= int(data)
-print("Array is",ARRAYHEIGHT,"rows tall")
-inputArray = [[0 for x in range(ARRAYWIDTH)] for y in range(ARRAYHEIGHT)] #define input array
-for i in range(ARRAYHEIGHT): #Fill array with string values relating to what each incoming value represents
+INPUT_ARRAY_WIDTH = 2
+INPUT_ARRAY_HEIGHT= int(data)
+print("Array is",INPUT_ARRAY_HEIGHT,"rows tall")
+input_array = [[0 for x in range(INPUT_ARRAY_WIDTH)] for y in range(INPUT_ARRAY_HEIGHT)] #define input array
+for i in range(INPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
     data, addr = sock.recvfrom(1024)
-    inputArray[i][0] = data.decode("utf-8")
+    input_array[i][0] = data.decode("utf-8")
 
+#Reading and writing data to/from the surface via UDP
+def surface_comm(thread_name):
+    global input_array #Allow writing to input_array
+    while True:
+        #Read surface data
+        i = 0
+        while i < INPUT_ARRAY_HEIGHT:
+            data, addr = sock.recvfrom(1024)
+            if ((data.decode("utf-8") == "11111" and i != 0)or (data.decode("utf-8") != "11111" and i == 0)):
+                # If value 11111 found anywhere other than position 0, or position 0 is not 11111, then reset to position 0
+                # This is to avoid writing incorrect values if there are sync issues which would cause erratic behaviour of the ROV
+                print("Data sync error from surface at position",i,". Current position reset to 0.")
+                i = 0
+            input_array[i][1] = data.decode("utf-8")  # Update current value in the input array
+            #print((input_array[i][0]), ":", input_array[i][1]) #DEBUG: output received value
+            i += 1  # Increment i
 
-while True:
-    #Print out received values and record them in the array
-    print("===RECIEVED SURFACE DATA:===")
-    i=0
-    while i<ARRAYHEIGHT:
-        data, addr = sock.recvfrom(1024)
-        if (data.decode("utf-8") == "11111" and i!=0):
-            #If value 11111111 found anywhere other than position 0, reset to position 0
-            print("Data sync error from surface. Current position reset to 0.")
-            i=0
-        inputArray[i][1] = data.decode("utf-8") #Update current value
-        print ((inputArray[i][0]),":",inputArray[i][1])
-        i+=1 #Increment i
-        
-##    for i in range(ARRAYHEIGHT):
-##        data, addr = sock.recvfrom(1024)
-##        if (data.decode("utf-8") == "11111111" and i!=0):
-##            #If value 11111111 found anywhere other than position 0, reset to position 0
-##            print("Data sync error from surface. Current position reset to 0.")
-##            i=0
-##        inputArray[i][1] = data.decode("utf-8") #Update current value
-##        print ((inputArray[i][0]),":",inputArray[i][1])
-    for i in range(ARRAYHEIGHT):
-        #Send to arduino
-        ser.write((inputArray[i][1]+"\n").encode("utf-8"))
-        #print("Arduino response:",ser.readline().decode("utf-8"))
+#Reading and writing data to/from the Arduino via USB
+def arduino_comm_1(thread_name):
+    global input_array #Allow writing to input_array
+    while True:
+        #Read surface data
+        i = 0
+        while i < INPUT_ARRAY_HEIGHT:
+            # Send to arduino
+            ser.write((input_array[i][1] + "\n").encode("utf-8"))
+            i += 1  # Increment i
+
+def print_to_console(thread_name):
+    while True:
+        time.sleep(0.1)
+        print("===RECIEVED SURFACE DATA:===")
+        for i in range(INPUT_ARRAY_HEIGHT):
+            print((input_array[i][0]), ":", input_array[i][1])
+
+#Define and start threads
+surface_comm = Thread( target=surface_comm, args=("Thread-1", ) )
+arduino_comm_1 = Thread( target=arduino_comm_1, args=("Thread-2", ) )
+print_to_console = Thread( target=print_to_console, args=("Thread-3", ) )
+surface_comm.start()
+arduino_comm_1.start()
+print_to_console.start()
