@@ -30,34 +30,56 @@ input_array = [[0 for x in range(INPUT_ARRAY_WIDTH)] for y in range(INPUT_ARRAY_
 input_array[0][0]="Synchronisation" #Top value remains the same at all times just in case things become unsynchronised
 
 
-#Set up UDP
-UDP_IP = "169.254.116.33" #This needs to be the Pi's IP
-UDP_PORT = 5005
-#MESSAGE = "Hello World (UDP success)"
+# #Set up UDP
+# UDP_IP = "169.254.116.33" #This needs to be the Pi's IP
+# UDP_PORT = 5005
+#
+# #Output UDP settings
+# print ("UDP target IP:", UDP_IP)
+# print ("UDP target port:", UDP_PORT)
+#
+# sock = socket.socket(socket.AF_INET, # Internet
+#                      socket.SOCK_DGRAM) # UDP
 
-#Output UDP settings
-print ("UDP target IP:", UDP_IP)
-print ("UDP target port:", UDP_PORT)
-#print ("message:", MESSAGE)
 
-sock = socket.socket(socket.AF_INET, # Internet
+#Set up UDP input from ROV
+print("Setting up surface->Pi UDP")
+UDP_RECEIVE_IP = "169.254.89.249" #The Pi's IP
+UDP_RECEIVE_PORT = 5005 #The port we're using
+sock_receive = socket.socket(socket.AF_INET, #internet
+                     socket.SOCK_DGRAM) #UDP
+sock_receive.bind((UDP_RECEIVE_IP, UDP_RECEIVE_PORT))
+print("UDP receiver connected:",UDP_RECEIVE_IP," Port:",UDP_RECEIVE_PORT)
+
+#Set up UDP output to ROV
+print("Setting up Pi->surface UDP")
+UDP_SEND_IP = "169.254.116.33" #This needs to be the surface IP
+UDP_SEND_PORT = 5005
+sock_send = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
+print("UDP sender connected:",UDP_SEND_IP," Port:",UDP_SEND_PORT)
+
+
+
+
+
+
 count=0
 
 #Send basic output array data
-sock.sendto(bytes(str(OUTPUT_ARRAY_HEIGHT), "utf-8"), (UDP_IP, UDP_PORT))
+sock_send.sendto(bytes(str(OUTPUT_ARRAY_HEIGHT), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 print("Init output array size:", str(OUTPUT_ARRAY_HEIGHT))
 for i in range(0, OUTPUT_ARRAY_HEIGHT):
     current_value = output_array[i][0]
-    sock.sendto(bytes(str(current_value), "utf-8"), (UDP_IP, UDP_PORT))
+    sock_send.sendto(bytes(str(current_value), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
     print("Sent label: " + str(output_array[i][0]))
 
 #Send basic input array data
-sock.sendto(bytes(str(INPUT_ARRAY_HEIGHT), "utf-8"), (UDP_IP, UDP_PORT))
+sock_send.sendto(bytes(str(INPUT_ARRAY_HEIGHT), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 print("Init input array size:", str(INPUT_ARRAY_HEIGHT))
 for i in range(0, INPUT_ARRAY_HEIGHT):
     current_value = input_array[i][0]
-    sock.sendto(bytes(str(current_value), "utf-8"), (UDP_IP, UDP_PORT))
+    sock_send.sendto(bytes(str(current_value), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
     print("Sent label: " + str(input_array[i][0]))
 
 while True:
@@ -69,12 +91,12 @@ while True:
     #Send output array down to ROV
     for i in range(0, OUTPUT_ARRAY_HEIGHT):
         current_value=output_array[i][1]
-        sock.sendto(bytes(str(current_value), "utf-8"), (UDP_IP, UDP_PORT))
+        sock_send.sendto(bytes(str(current_value), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
         print("Sent data: "+str(output_array[i][0])+" value: "+str(output_array[i][1]))
 
     # Get sensor data from ROV
     for i in range(0, INPUT_ARRAY_HEIGHT):
-        input_array[1][1] = data, addr = sock.recvfrom(1024)
+        input_array[1][1] = data, addr = sock_receive.recvfrom(1024)
         print("Received data: " + str(input_array[i][0]) + " value: " + str(input_array[i][1]))
 
 

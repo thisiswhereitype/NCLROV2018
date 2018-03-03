@@ -11,34 +11,43 @@ import time
 ser = serial.Serial('/dev/ttyACM0',115200)
 print("Serial connected:", ser.name)
 
-#Set up UDP IO for surface
-UDP_IP = "169.254.116.33" #The Pi's IP
-UDP_PORT = 5005 #The port we're using
-sock = socket.socket(socket.AF_INET, #internet
+#Set up UDP input from surface
+print("Setting up surface->Pi UDP")
+UDP_RECEIVE_IP = "169.254.116.33" #The Pi's IP
+UDP_RECEIVE_PORT = 5005 #The port we're using
+sock_receive = socket.socket(socket.AF_INET, #internet
                      socket.SOCK_DGRAM) #UDP
-sock.bind((UDP_IP, UDP_PORT))
-print("UDP connected:",UDP_IP," Port:",UDP_PORT)
+sock_receive.bind((UDP_RECEIVE_IP, UDP_RECEIVE_PORT))
+print("UDP receiver connected:",UDP_RECEIVE_IP," Port:",UDP_RECEIVE_PORT)
+
+#Set up UDP output to surface
+print("Setting up Pi->surface UDP")
+UDP_SEND_IP = "169.254.89.249" #This needs to be the surface IP
+UDP_SEND_PORT = 5005
+sock_send = socket.socket(socket.AF_INET, # Internet
+                     socket.SOCK_DGRAM) # UDP
+print("UDP sender connected:",UDP_SEND_IP," Port:",UDP_SEND_PORT)
 
 #Set up output array initially using received size and labels from the surface
 print("Waiting for array initialisation data from surface.")
-data, addr = sock.recvfrom(1024) #Receive array height
+data, addr = sock_receive.recvfrom(1024) #Receive array height
 OUTPUT_ARRAY_WIDTH = 2
 OUTPUT_ARRAY_HEIGHT= int(data)
 print("Output array is",OUTPUT_ARRAY_HEIGHT,"rows tall")
 output_array = [[0 for x in range(OUTPUT_ARRAY_WIDTH)] for y in range(OUTPUT_ARRAY_HEIGHT)] #define output array
 for i in range(OUTPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
-    data, addr = sock.recvfrom(1024)
+    data, addr = sock_receive.recvfrom(1024)
     output_array[i][0] = data.decode("utf-8")
     print("Label",str(i),":",output_array[i][0])
 
 #Set up input array initially using received size and labels from the surface
-data, addr = sock.recvfrom(1024) #Receive array height
+data, addr = sock_receive.recvfrom(1024) #Receive array height
 INPUT_ARRAY_WIDTH = 2
 INPUT_ARRAY_HEIGHT= int(data)
 print("Input array is",INPUT_ARRAY_HEIGHT,"rows tall")
 input_array = [[0 for x in range(INPUT_ARRAY_WIDTH)] for y in range(INPUT_ARRAY_HEIGHT)] #define input array
 for i in range(INPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
-    data, addr = sock.recvfrom(1024)
+    data, addr = sock_receive.recvfrom(1024)
     input_array[i][0] = data.decode("utf-8")
     print("Label",str(i),":",input_array[i][0])
 
@@ -49,7 +58,7 @@ def surface_comm(thread_name):
         #Read surface data
         i = 0
         while i < OUTPUT_ARRAY_HEIGHT:
-            data, addr = sock.recvfrom(1024)
+            data, addr = sock_receive.recvfrom(1024)
             if ((data.decode("utf-8") == "11111" and i != 0)or (data.decode("utf-8") != "11111" and i == 0)):
                 # If value 11111 found anywhere other than position 0, or position 0 is not 11111, then reset to position 0
                 # This is to avoid writing incorrect values if there are sync issues which would cause erratic behaviour of the ROV
@@ -60,7 +69,7 @@ def surface_comm(thread_name):
             i += 1  # Increment i
         #Send ROV sensor data back to surface
         for i in range(0, INPUT_ARRAY_HEIGHT):
-            sock.sendto(bytes(str(input_array[1][i]), "utf-8"), (UDP_IP, UDP_PORT))
+            sock_send.sendto(bytes(str(input_array[1][i]), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 
 #Reading and writing data to/from the Arduino via USB
 def arduino_comm_a(thread_name):
