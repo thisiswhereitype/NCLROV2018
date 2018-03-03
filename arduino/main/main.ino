@@ -1,11 +1,17 @@
 #include <WString.h>
 
 String incomingString = "";
-const int ARRAYSIZE = 10;
-int inputArray[ARRAYSIZE];
+const int OUTPUT_ARRAY_SIZE = 10;
+const int INPUT_ARRAY_SIZE = 10;
+int outputArray[OUTPUT_ARRAY_SIZE];     //Array received from the Pi to control all outputs
+int inputArray[INPUT_ARRAY_SIZE];     //Array of currently measured input values to send back to Pi
 int arrayPointer=0;              // Int to point to current array position
 String inputString = "";         // a String to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
+boolean sendComplete = false;
+
+//For testing
+int inputArray[0] = 10000;
 
 void setup() {
   //Serial.begin(9600);     // opens serial port, sets data rate to 9600 bps
@@ -17,27 +23,28 @@ void setup() {
 }
 
 void loop() {
+//==============================================COMMUNICATION===========================================
+  //-----------------------------Check for incoming "output" values (eg: Thrusters)------------------------
   if (stringComplete) { //If new value received (ending in a newline character)
 
     int currentValue = inputString.toInt();
     
-    //currentValue = 11111;
     if(currentValue == 11111 && arrayPointer != 0){
       arrayPointer = 0; //If sync value is not in position 0, reset to position 0
-      Serial.print("Sync error. Now reset to position 0.");
+      //Serial.print("Sync error. Now reset to position 0."); //FOR DEBUGGING ONLY
     }
     
-    inputArray[arrayPointer]= currentValue;
+    outputArray[arrayPointer]= currentValue;
 
-    // say what you got:
-    
-    Serial.print("[");
-    Serial.print(arrayPointer);
-    Serial.print("]");
-    Serial.println(inputString);
+    // say what you got: 
+//    Serial.print("[");
+//    Serial.print(arrayPointer);
+//    Serial.print("]");
+//    Serial.println(inputString); //FOR DEBUGGING ONLY
 
-    if (arrayPointer==(ARRAYSIZE-1)){
+    if (arrayPointer==(OUTPUT_ARRAY_SIZE-1)){
       arrayPointer = 0; //Reset arraypointer if it's reached the maximum array position
+      sendComplete = false; //Send back input values once all output values have been received
     }
     else{
       arrayPointer = arrayPointer + 1; //Else increment arrayPointer
@@ -48,39 +55,36 @@ void loop() {
     stringComplete = false;
   }
 
+  //------------------------------------Send input values back to Pi---------------------------------
+  if (!sendComplete){ //If ready to send back values
+    for(int i=0; i<INPUT_ARRAY_SIZE; i++) {
+      //Serial.print("[");
+      //Serial.print(i);
+      //Serial.print("]");
+      Serial.println(inputArray[i]);
 
+    }
+    sendComplete = true;
+  }
+//==============================================/COMMUNICATION===========================================
 
-  if(inputArray[9]==1){
+//==============================================READ_SENSORS===========================================
+
+//For testing decrement  from 10000:
+inputArray[0]=inputArray[0]-1;
+
+//==============================================/READ_SENSORS===========================================
+
+//==============================================CONTROL_OUTPUTS===========================================
+
+  if(outputArray[9]==1){
       digitalWrite(LED_BUILTIN, HIGH);
     }
     else{
       digitalWrite(LED_BUILTIN, LOW);
     }
-  // If receiving data:
-//  if (Serial.available() > 0) {
-//
-//    for (int i=0; i<ARRAYSIZE; i++) {
-//      incomingString = Serial.readString();
-//      inputArray[i]=incomingString.toInt();
-//  
-//      // say what you got:
-//      //delay(5); //Delay to allow some time for the arduino to actually read the data
-//      
-//      //Serial.print("I received: ");
-//      Serial.print("[");
-//      Serial.print(i);
-//      Serial.print("]");
-//      Serial.println(incomingString);
-//    }
-//    
-//    //if(incomingString.toInt()==1){
-//    if(inputArray[8]==1){
-//      digitalWrite(LED_BUILTIN, HIGH);
-//    }
-//    else{
-//      digitalWrite(LED_BUILTIN, LOW);
-//    }
-//  }
+ //==============================================/CONTROL_OUTPUTS===========================================
+
 }
 
 

@@ -19,16 +19,26 @@ sock = socket.socket(socket.AF_INET, #internet
 sock.bind((UDP_IP, UDP_PORT))
 print("UDP connected:",UDP_IP," Port:",UDP_PORT)
 
-#Set up array initially using received size and labels from the surface
+#Set up output array initially using received size and labels from the surface
 print("Waiting for array initialisation data from surface.")
 data, addr = sock.recvfrom(1024) #Receive array height
 OUTPUT_ARRAY_WIDTH = 2
 OUTPUT_ARRAY_HEIGHT= int(data)
 print("Array is",OUTPUT_ARRAY_HEIGHT,"rows tall")
-output_array = [[0 for x in range(OUTPUT_ARRAY_WIDTH)] for y in range(OUTPUT_ARRAY_HEIGHT)] #define input array
+output_array = [[0 for x in range(OUTPUT_ARRAY_WIDTH)] for y in range(OUTPUT_ARRAY_HEIGHT)] #define output array
 for i in range(OUTPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
     data, addr = sock.recvfrom(1024)
     output_array[i][0] = data.decode("utf-8")
+
+#Set up input array initially using received size and labels from the surface
+data, addr = sock.recvfrom(1024) #Receive array height
+INPUT_ARRAY_WIDTH = 2
+INPUT_ARRAY_HEIGHT= int(data)
+print("Array is",INPUT_ARRAY_HEIGHT,"rows tall")
+input_array = [[0 for x in range(INPUT_ARRAY_WIDTH)] for y in range(INPUT_ARRAY_HEIGHT)] #define input array
+for i in range(INPUT_ARRAY_HEIGHT): #Fill array with string values relating to what each incoming value represents
+    data, addr = sock.recvfrom(1024)
+    input_array[i][0] = data.decode("utf-8")
 
 #Reading and writing data to/from the surface via UDP
 def surface_comm(thread_name):
@@ -61,18 +71,20 @@ def arduino_comm_a(thread_name):
             
         #Get arduino sensor data
         i = 0
-        while i < :
-            # Send to arduino
-            ser.write((output_array[i][1] + "\n").encode("utf-8"))
+        while i < INPUT_ARRAY_HEIGHT:
+            # get current value
+            input_array[i]=ser.readline()
             i += 1  # Increment i
-            time.sleep(0.01)
 
 def print_to_console(thread_name):
     while True:
         time.sleep(0.1)#Print to console every 0.1 seconds
         print("===RECIEVED SURFACE DATA:===")
         for i in range(OUTPUT_ARRAY_HEIGHT):
-            print((output_array[i][0]), ":", output_array[i][1])
+            print(i,(output_array[i][0]), ":", output_array[i][1])
+        print("===RECIEVED ARDUINO DATA:===")
+        for i in range(INPUT_ARRAY_HEIGHT):
+            print(i,(input_array[i][0]), ":", input_array[i][1])
 
 #Define and start threads
 surface_comm = Thread( target=surface_comm, args=("Thread-1", ) )
