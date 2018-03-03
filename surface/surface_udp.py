@@ -96,7 +96,8 @@ while True:
 
     # Get sensor data from ROV
     for i in range(0, INPUT_ARRAY_HEIGHT):
-        input_array[1][1] = data, addr = sock_receive.recvfrom(1024)
+        data, addr = sock_receive.recvfrom(1024)
+        input_array[i][1] = int(data.decode("utf-8"))
         print("Received data: " + str(input_array[i][0]) + " value: " + str(input_array[i][1]))
 
 
