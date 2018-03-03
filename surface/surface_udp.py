@@ -95,10 +95,17 @@ while True:
         print("Sent data: "+str(output_array[i][0])+" value: "+str(output_array[i][1]))
 
     # Get sensor data from ROV
-    for i in range(0, INPUT_ARRAY_HEIGHT):
+    i = 0
+    while i < INPUT_ARRAY_HEIGHT:
         data, addr = sock_receive.recvfrom(1024)
+        if ((data.decode("utf-8") == "11111" and i != 0) or (data.decode("utf-8") != "11111" and i == 0)):
+            # If value 11111 found anywhere other than position 0, or position 0 is not 11111, then reset to position 0
+            # This is to avoid writing incorrect values if there are sync issues which would cause erratic behaviour of the ROV
+            print("Data sync error from ROV at position", i, ". Current position reset to 0.")
+            i = 0
         input_array[i][1] = int(data.decode("utf-8"))
         print("Received data: " + str(input_array[i][0]) + " value: " + str(input_array[i][1]))
+        i += 1  # Increment i
 
 
     #Test to turn LED on and off

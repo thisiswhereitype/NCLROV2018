@@ -89,6 +89,11 @@ def arduino_comm_a(thread_name):
         while i < INPUT_ARRAY_HEIGHT:
             # get current value
             input_array[i][1]=(ser.readline().decode("utf-8"))
+            if ((input_array[i][1] == "11111" and i != 0)or (input_array[i][1] != "11111" and i == 0)):
+                # If value 11111 found anywhere other than position 0, or position 0 is not 11111, then reset to position 0
+                # This is to avoid writing incorrect values if there are sync issues which would cause erratic behaviour of the ROV
+                print("Data sync error from arduino at position",i,". Current position reset to 0.")
+                i = 0
             #print(">>>>>>>>>Writing",input_array[i][1],"to position",i) #For debugging
             i += 1  # Increment i
             

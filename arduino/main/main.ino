@@ -20,9 +20,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-
-  //For testing
-inputArray[0] = 10000;
+  inputArray[0]=11111; //Synchronisation value just in case one value is lost in action 
 }
 
 void loop() {
@@ -61,15 +59,7 @@ void loop() {
   //------------------------------------Send input values back to Pi---------------------------------
   if (!sendComplete){ //If ready to send back values
     for(int i=0; i<INPUT_ARRAY_SIZE; i++) {
-      //Serial.print("[");
-      //Serial.print(i);
-      //Serial.print("]");
-      Serial.println(inputArray[i]);
-
-
-      //For testing decrement  from 10000:
-inputArray[0]=inputArray[0]-1;
-      
+      Serial.println(inputArray[i]);      
     }
     sendComplete = true;
   }
