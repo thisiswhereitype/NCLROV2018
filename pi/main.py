@@ -48,7 +48,7 @@ def surface_comm(thread_name):
             i += 1  # Increment i
 
 #Reading and writing data to/from the Arduino via USB
-def arduino_comm_1(thread_name):
+def arduino_comm_a(thread_name):
     global input_array #Allow writing to input_array
     while True:
         #Read surface data
@@ -57,18 +57,19 @@ def arduino_comm_1(thread_name):
             # Send to arduino
             ser.write((input_array[i][1] + "\n").encode("utf-8"))
             i += 1  # Increment i
+            time.sleep(0.01)
 
 def print_to_console(thread_name):
     while True:
-        time.sleep(0.1)
+        time.sleep(0.1)#Print to console every 0.1 seconds
         print("===RECIEVED SURFACE DATA:===")
         for i in range(INPUT_ARRAY_HEIGHT):
             print((input_array[i][0]), ":", input_array[i][1])
 
 #Define and start threads
 surface_comm = Thread( target=surface_comm, args=("Thread-1", ) )
-arduino_comm_1 = Thread( target=arduino_comm_1, args=("Thread-2", ) )
+arduino_comm_a = Thread( target=arduino_comm_a, args=("Thread-2", ) )
 print_to_console = Thread( target=print_to_console, args=("Thread-3", ) )
 surface_comm.start()
-arduino_comm_1.start()
+arduino_comm_a.start()
 print_to_console.start()
