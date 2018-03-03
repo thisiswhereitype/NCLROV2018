@@ -2,7 +2,7 @@
 
 String incomingString = "";
 const int OUTPUT_ARRAY_SIZE = 10;
-const int INPUT_ARRAY_SIZE = 10;
+const int INPUT_ARRAY_SIZE = 1;
 int outputArray[OUTPUT_ARRAY_SIZE];     //Array received from the Pi to control all outputs
 int inputArray[INPUT_ARRAY_SIZE];     //Array of currently measured input values to send back to Pi
 int arrayPointer=0;              // Int to point to current array position
@@ -10,8 +10,7 @@ String inputString = "";         // a String to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 boolean sendComplete = false;
 
-//For testing
-int inputArray[0] = 10000;
+
 
 void setup() {
   //Serial.begin(9600);     // opens serial port, sets data rate to 9600 bps
@@ -20,6 +19,10 @@ void setup() {
   inputString.reserve(200); // reserve 200 bytes for the inputString
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
+
+
+  //For testing
+inputArray[0] = 10000;
 }
 
 void loop() {
@@ -37,9 +40,9 @@ void loop() {
     outputArray[arrayPointer]= currentValue;
 
     // say what you got: 
-//    Serial.print("[");
-//    Serial.print(arrayPointer);
-//    Serial.print("]");
+    //Serial.print("[");
+    //Serial.print(arrayPointer);
+  //  Serial.print("]");
 //    Serial.println(inputString); //FOR DEBUGGING ONLY
 
     if (arrayPointer==(OUTPUT_ARRAY_SIZE-1)){
@@ -63,6 +66,10 @@ void loop() {
       //Serial.print("]");
       Serial.println(inputArray[i]);
 
+
+      //For testing decrement  from 10000:
+inputArray[0]=inputArray[0]-1;
+      
     }
     sendComplete = true;
   }
@@ -70,8 +77,7 @@ void loop() {
 
 //==============================================READ_SENSORS===========================================
 
-//For testing decrement  from 10000:
-inputArray[0]=inputArray[0]-1;
+
 
 //==============================================/READ_SENSORS===========================================
 

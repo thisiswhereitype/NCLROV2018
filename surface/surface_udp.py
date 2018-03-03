@@ -33,12 +33,12 @@ input_array[0][0]="Synchronisation" #Top value remains the same at all times jus
 #Set up UDP
 UDP_IP = "169.254.116.33" #This needs to be the Pi's IP
 UDP_PORT = 5005
-MESSAGE = "Hello World (UDP success)"
+#MESSAGE = "Hello World (UDP success)"
 
 #Output UDP settings
 print ("UDP target IP:", UDP_IP)
 print ("UDP target port:", UDP_PORT)
-print ("message:", MESSAGE)
+#print ("message:", MESSAGE)
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
@@ -46,17 +46,19 @@ count=0
 
 #Send basic output array data
 sock.sendto(bytes(str(OUTPUT_ARRAY_HEIGHT), "utf-8"), (UDP_IP, UDP_PORT))
+print("Init output array size:", str(OUTPUT_ARRAY_HEIGHT))
 for i in range(0, OUTPUT_ARRAY_HEIGHT):
     current_value = output_array[i][0]
     sock.sendto(bytes(str(current_value), "utf-8"), (UDP_IP, UDP_PORT))
-    print("Sent data: " + str(output_array[i][0]))
+    print("Sent label: " + str(output_array[i][0]))
 
 #Send basic input array data
 sock.sendto(bytes(str(INPUT_ARRAY_HEIGHT), "utf-8"), (UDP_IP, UDP_PORT))
+print("Init input array size:", str(INPUT_ARRAY_HEIGHT))
 for i in range(0, INPUT_ARRAY_HEIGHT):
     current_value = input_array[i][0]
     sock.sendto(bytes(str(current_value), "utf-8"), (UDP_IP, UDP_PORT))
-    print("Sent data: " + str(input_array[i][0]))
+    print("Sent label: " + str(input_array[i][0]))
 
 while True:
     #time.sleep(0.1) #Give the pi some time to think
