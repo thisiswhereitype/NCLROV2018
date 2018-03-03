@@ -69,7 +69,7 @@ def surface_comm(thread_name):
             i += 1  # Increment i
         #Send ROV sensor data back to surface
         for i in range(0, INPUT_ARRAY_HEIGHT):
-            sock_send.sendto(bytes(str(input_array[1][i]), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
+            sock_send.sendto(bytes(str(input_array[i][1]), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 
 #Reading and writing data to/from the Arduino via USB
 def arduino_comm_a(thread_name):
