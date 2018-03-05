@@ -47,6 +47,15 @@ sock_send = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 print("UDP sender connected:",UDP_SEND_IP," Port:",UDP_SEND_PORT)
 
+
+#Ping Pi software to ensure it's running and everything is fine
+sock_send.sendto(bytes("Ready?", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
+print("Waiting for response from ROV.")
+data, addr = sock_receive.recvfrom(1024)    # Read ping (or any data at all which would indicate that the Pi is online)
+                                            # If the surface has previously sent data then the pi would continue spitting out sensor data despite the surface restarting
+                                            # Therefore any data at all is fine for this check
+
+
 #Send basic output array data
 sock_send.sendto(bytes(str(OUTPUT_ARRAY_HEIGHT), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 print("Init output array size:", str(OUTPUT_ARRAY_HEIGHT))
