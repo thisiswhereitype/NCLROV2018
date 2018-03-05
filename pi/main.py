@@ -29,13 +29,13 @@ sock_send = socket.socket(socket.AF_INET, # Internet
 print("UDP sender connected:",UDP_SEND_IP," Port:",UDP_SEND_PORT)
 
 #Wait for ping from surface and ping back
-print ("Waiting for ping from surface.")
-data, addr = sock_receive.recvfrom(1024) #Read ping
-while (data!="Ready?"):
-    print("Data received, but not ping.")
-    data, addr = sock_receive.recvfrom(1024)  # Read ping
+#print ("Waiting for ping from surface.")
+#data, addr = sock_receive.recvfrom(1024) #Read ping
+#while (data.decode("utf-8")!="Ready?"):
+#    print("Data",str(data),"received, but not ping.")
+#    data, addr = sock_receive.recvfrom(1024)  # Read ping
 #Respond to ping and get ready for incoming data
-sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
+#sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 
 #Set up output array initially using received size and labels from the surface
 print("Waiting for array initialisation data from surface.")
