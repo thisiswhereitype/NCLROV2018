@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea9a7a6c-55e8-47b0-ab56-9ee623148482" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/pi/main.py" afterPath="$PROJECT_DIR$/pi/main.py" />
       <change beforePath="$PROJECT_DIR$/surface/surface_udp.py" afterPath="$PROJECT_DIR$/surface/surface_udp.py" />
     </list>
@@ -18,8 +17,8 @@
       <file leaf-file-name="surface_udp.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/surface/surface_udp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="69" column="41" lean-forward="false" selection-start-line="69" selection-start-column="41" selection-end-line="69" selection-end-column="41" />
+            <state relative-caret-position="357">
+              <caret line="69" column="33" lean-forward="false" selection-start-line="69" selection-start-column="33" selection-end-line="69" selection-end-column="33" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -30,8 +29,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pi/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="40" column="44" lean-forward="true" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
+            <state relative-caret-position="357">
+              <caret line="39" column="48" lean-forward="false" selection-start-line="39" selection-start-column="48" selection-end-line="39" selection-end-column="48" />
               <folding>
                 <element signature="e#261#289#0" expanded="true" />
               </folding>
@@ -75,14 +74,14 @@
         <option value="$PROJECT_DIR$/surface/test.py" />
         <option value="$PROJECT_DIR$/surface/thread_test.py" />
         <option value="$PROJECT_DIR$/camera/camera.py" />
-        <option value="$PROJECT_DIR$/pi/main.py" />
         <option value="$PROJECT_DIR$/surface/surface_udp.py" />
+        <option value="$PROJECT_DIR$/pi/main.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="178" />
-    <option name="y" value="-13" />
+    <option name="x" value="210" />
+    <option name="y" value="-12" />
     <option name="width" value="747" />
     <option name="height" value="700" />
   </component>
@@ -656,8 +655,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/surface/surface_udp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="69" column="41" lean-forward="false" selection-start-line="69" selection-start-column="41" selection-end-line="69" selection-end-column="41" />
+        <state relative-caret-position="357">
+          <caret line="69" column="33" lean-forward="false" selection-start-line="69" selection-start-column="33" selection-end-line="69" selection-end-column="33" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
@@ -666,8 +665,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pi/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="40" column="44" lean-forward="true" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
+        <state relative-caret-position="357">
+          <caret line="39" column="48" lean-forward="false" selection-start-line="39" selection-start-column="48" selection-end-line="39" selection-end-column="48" />
           <folding>
             <element signature="e#261#289#0" expanded="true" />
           </folding>

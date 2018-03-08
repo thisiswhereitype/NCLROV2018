@@ -62,12 +62,12 @@ class ROVUDP():
 
         # Ping Pi software to ensure it's running and everything is fine
         self.sock_send.sendto(bytes("Ready?", "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
+        self.sock_send.sendto(bytes(self.UDP_RECEIVE_IP, "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
         print("Waiting for response from ROV.")
         data, addr = self.sock_receive.recvfrom(1024)    # Read ping (or any data at all which would indicate that the Pi is online)
         # If the surface has previously sent data then the pi would continue spitting out sensor data despite the surface restarting
         # Therefore any data at all is fine for this check
-        self.sock_send.sendto(bytes(self.UDP_RECEIVE_IP, "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
-        print("Response received, sending my IP",str(self.UDP_RECEIVE_IP))
+        print("Response received")
 
         # Send basic output array data
         self.sock_send.sendto(bytes(str(self.OUTPUT_ARRAY_HEIGHT), "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
