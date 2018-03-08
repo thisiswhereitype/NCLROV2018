@@ -44,18 +44,21 @@ class ROVUDP():
             0] = "Synchronisation"  # Top value remains the same at all times just in case things become unsynchronised
 
     def connect(self):
+        # Set up UDP output to ROV
+        print("Setting up Surface->Pi UDP")
+        self.sock_send = socket.socket(socket.AF_INET,  # Internet
+                                       socket.SOCK_DGRAM)  # UDP
+        print("UDP sender connected:", self.UDP_SEND_IP, " Port:", self.UDP_SEND_PORT)
+
+        #Send surface IP so Pi know where to send data
+
+
         # Set up UDP input from ROV
-        print("Setting up surface->Pi UDP")
+        print("Setting up Pi->Surface UDP")
         self.sock_receive = socket.socket(socket.AF_INET,  # internet
                                           socket.SOCK_DGRAM)  # UDP
         self.sock_receive.bind((self.UDP_RECEIVE_IP, self.UDP_RECEIVE_PORT))
         print("UDP receiver connected:", self.UDP_RECEIVE_IP, " Port:", self.UDP_RECEIVE_PORT)
-
-        # Set up UDP output to ROV
-        print("Setting up Pi->surface UDP")
-        self.sock_send = socket.socket(socket.AF_INET,  # Internet
-                                       socket.SOCK_DGRAM)  # UDP
-        print("UDP sender connected:", self.UDP_SEND_IP, " Port:", self.UDP_SEND_PORT)
 
         # Ping Pi software to ensure it's running and everything is fine
         self.sock_send.sendto(bytes("Ready?", "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
@@ -63,6 +66,8 @@ class ROVUDP():
         data, addr = self.sock_receive.recvfrom(1024)    # Read ping (or any data at all which would indicate that the Pi is online)
         # If the surface has previously sent data then the pi would continue spitting out sensor data despite the surface restarting
         # Therefore any data at all is fine for this check
+        self.sock_send.sendto(bytes(self.UDP_RECEIVE_IP, "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
+        print("Response received, sending my IP",str(self.UDP_RECEIVE_IP))
 
         # Send basic output array data
         self.sock_send.sendto(bytes(str(self.OUTPUT_ARRAY_HEIGHT), "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))

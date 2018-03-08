@@ -22,7 +22,7 @@ print("UDP receiver connected:",UDP_RECEIVE_IP," Port:",UDP_RECEIVE_PORT)
 
 #Set up UDP output to surface
 print("Setting up Pi->surface UDP")
-UDP_SEND_IP = "169.254.89.249" #This needs to be the surface IP
+UDP_SEND_IP = "169.254.89.249" #This needs to be the surface IP (Will be automatically assigned during initial code handshake)
 UDP_SEND_PORT = 5005
 sock_send = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
@@ -36,6 +36,9 @@ while (data.decode("utf-8")!="Ready?"):
     data, addr = sock_receive.recvfrom(1024)  # Read ping
 # Respond to ping and get ready for incoming data
 sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
+#Get IP from surface
+data, addr = sock_receive.recvfrom(1024) #Read IP
+UDP_SEND_IP = data.decode("utf-8") # Save IP
 
 #Set up output array initially using received size and labels from the surface
 print("Waiting for array initialisation data from surface.")
