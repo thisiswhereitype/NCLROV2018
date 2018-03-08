@@ -77,6 +77,7 @@ def surface_comm(thread_name):
             if(data.decode("utf-8") == "Ready?"):
                 #If incoming value is the initial ping which suggests the surface code was restarted
                 # Respond to ping and get ready for incoming data
+                print("==========Surface restart detected. Getting ready to receive data.==========")
                 sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
                 i=0
                 
