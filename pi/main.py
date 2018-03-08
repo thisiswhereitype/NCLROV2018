@@ -28,14 +28,14 @@ sock_send = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 print("UDP sender connected:",UDP_SEND_IP," Port:",UDP_SEND_PORT)
 
-#Wait for ping from surface and ping back
-#print ("Waiting for ping from surface.")
-#data, addr = sock_receive.recvfrom(1024) #Read ping
-#while (data.decode("utf-8")!="Ready?"):
-#    print("Data",str(data),"received, but not ping.")
-#    data, addr = sock_receive.recvfrom(1024)  # Read ping
-#Respond to ping and get ready for incoming data
-#sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
+# Wait for ping from surface and ping back
+print ("Waiting for ping from surface.")
+data, addr = sock_receive.recvfrom(1024) #Read ping
+while (data.decode("utf-8")!="Ready?"):
+    print("Data",str(data),"received, but not ping.")
+    data, addr = sock_receive.recvfrom(1024)  # Read ping
+# Respond to ping and get ready for incoming data
+sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 
 #Set up output array initially using received size and labels from the surface
 print("Waiting for array initialisation data from surface.")
@@ -73,9 +73,17 @@ def surface_comm(thread_name):
                 # This is to avoid writing incorrect values if there are sync issues which would cause erratic behaviour of the ROV
                 print("Data sync error from surface at position",i,". Current position reset to 0.")
                 i = 0
-            output_array[i][1] = data.decode("utf-8")  # Update current value in the input array
-            #print((output_array[i][0]), ":", output_array[i][1]) #DEBUG: output received value
-            i += 1  # Increment i
+
+            if(data.decode("utf-8") == "Ready?"):
+                #If incoming value is the initial ping which suggests the surface code was restarted
+                # Respond to ping and get ready for incoming data
+                sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
+                i=0
+                
+            else:
+                output_array[i][1] = data.decode("utf-8")  # Update current value in the input array
+                #print((output_array[i][0]), ":", output_array[i][1]) #DEBUG: output received value
+                i += 1  # Increment i
         #Send ROV sensor data back to surface
         for i in range(0, INPUT_ARRAY_HEIGHT):
             sock_send.sendto(bytes(str(input_array[i][1]), "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
