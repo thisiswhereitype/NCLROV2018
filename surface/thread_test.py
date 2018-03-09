@@ -1,5 +1,6 @@
 from threading import Thread
 import time
+
 a = 0  #global variable
 
 def thread1(threadname):

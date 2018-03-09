@@ -1,5 +1,7 @@
 #include <WString.h>
+#include <Servo.h>
 
+//For communication
 String incomingString = "";
 const int OUTPUT_ARRAY_SIZE = 10;
 const int INPUT_ARRAY_SIZE = 1;
@@ -10,10 +12,25 @@ String inputString = "";         // a String to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 boolean sendComplete = false;
 
+//For thrusters
+#define SERVO_COUNT 6
+
+// 1500ms +/- 400ms
+#define SERVO_MIN_PERIOD_MUS 1100
+#define SERVO_MAX_PERIOD_MUS 1900
+
+#define FORE_TOP_INDEX_1 0
+#define FORE_TOP_INDEX_2 1
+#define FORE_LEFT_INDEX 2
+#define FORE_RIGHT_INDEX 3
+#define AFT_LEFT_INDEX 4
+#define AFT_RIGHT_INDEX 5
+
+byte servoMappings [] = {0,1,2,3,4,5};
+Servo servo[SERVO_COUNT];
 
 
 void setup() {
-  //Serial.begin(9600);     // opens serial port, sets data rate to 9600 bps
   Serial.begin(115200);     // opens serial port, sets data rate to 115200 bps
   Serial.setTimeout(1000);     //The default timeout is a second - way too slow for our purposes. Now set to 1ms
   inputString.reserve(200); // reserve 200 bytes for the inputString
@@ -21,6 +38,15 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);
 
   inputArray[0]=11111; //Synchronisation value just in case one value is lost in action 
+
+  //For thrusters
+  for (size_t i = 0; i < SERVO_COUNT; i++) {
+        servo[i].attach(servoMappings[i], SERVO_MIN_PERIOD_MUS, SERVO_MAX_PERIOD_MUS);
+        // send "stop" signal to ESC.
+        servo[i].writeMicroseconds(1500);
+    }
+    // delay to allow the ESC to recognize the stopped signal
+    delay(1000);
 }
 
 void loop() {
@@ -73,6 +99,12 @@ void loop() {
     else{
       digitalWrite(LED_BUILTIN, LOW);
     }
+    
+ for (size_t i = 0; i < SERVO_COUNT; i++) {
+        setServo(inputArray[i+1], i); //Set thrusters to the correct levels
+    }
+
+  
  //==============================================/CONTROL_OUTPUTS===========================================
 
 }
@@ -94,4 +126,15 @@ void serialEvent() {
       stringComplete = true;
     }
   }
+}
+
+//Control servos/thrusters and cap value to correct range
+inline void setServo(int value, int servoIndex) {
+    if (value <= SERVO_MIN_PERIOD_MUS) {
+        value = SERVO_MIN_PERIOD_MUS;
+    }
+    if (value >SERVO_MAX_PERIOD_MUS) {
+        value =SERVO_MAX_PERIOD_MUS;
+    }
+    servo[servoIndex].writeMicroseconds(value);
 }

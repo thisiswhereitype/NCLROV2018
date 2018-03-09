@@ -50,8 +50,6 @@ class ROVUDP():
                                        socket.SOCK_DGRAM)  # UDP
         print("UDP sender connected:", self.UDP_SEND_IP, " Port:", self.UDP_SEND_PORT)
 
-        #Send surface IP so Pi know where to send data
-
 
         # Set up UDP input from ROV
         print("Setting up Pi->Surface UDP")
@@ -62,7 +60,7 @@ class ROVUDP():
 
         # Ping Pi software to ensure it's running and everything is fine
         self.sock_send.sendto(bytes("Ready?", "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
-        self.sock_send.sendto(bytes(self.UDP_RECEIVE_IP, "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT))
+        self.sock_send.sendto(bytes(self.UDP_RECEIVE_IP, "utf-8"), (self.UDP_SEND_IP, self.UDP_SEND_PORT)) #Send surface IP so Pi knows where to send data (to avoid needing to set a static ip on the surface computer)
         print("Waiting for response from ROV.")
         data, addr = self.sock_receive.recvfrom(1024)    # Read ping (or any data at all which would indicate that the Pi is online)
         # If the surface has previously sent data then the pi would continue spitting out sensor data despite the surface restarting

@@ -37,7 +37,7 @@ while (data.decode("utf-8")!="Ready?"):
 #Get IP from surface
 data, addr = sock_receive.recvfrom(1024) #Read IP
 UDP_SEND_IP = data.decode("utf-8") # Save IP
-print("Pring response received, new SEND_IP is",UDP_SEND_IP)
+print("Ping response received, new SEND_IP is",UDP_SEND_IP)
 # Respond to ping and get ready for incoming data
 sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
 
