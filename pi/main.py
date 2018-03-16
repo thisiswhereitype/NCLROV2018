@@ -1,28 +1,28 @@
-#This program handles the majority of the Raspberry Pi's processing for communication between the surface and ROV
-#It's using separate threads for surface-Pi communication and Pi-Arduino communication
-#Both threads use the global arrays for inputs and outputs
+# This program handles the majority of the Raspberry Pi's processing for communication between the surface and ROV
+# It's using separate threads for surface-Pi communication and Pi-Arduino communication
+# Both threads use the global arrays for inputs and outputs
 
 from threading import Thread
 import socket
 import serial
 import time
 
-#Set up serial IO for arduino
+# Set up serial IO for arduino
 ser = serial.Serial('/dev/ttyACM0',115200)
 print("Serial connected:", ser.name)
 
-#Set up UDP input from surface
+# Set up UDP input from surface
 print("Setting up surface->Pi UDP")
-UDP_RECEIVE_IP = "169.254.116.33" #The Pi's IP
-UDP_RECEIVE_PORT = 5005 #The port we're using
-sock_receive = socket.socket(socket.AF_INET, #internet
-                     socket.SOCK_DGRAM) #UDP
+UDP_RECEIVE_IP = "169.254.116.33" # The Pi's IP
+UDP_RECEIVE_PORT = 5005 # The port we're using
+sock_receive = socket.socket(socket.AF_INET  # internet
+                            ,socket.SOCK_DGRAM) # UDP
 sock_receive.bind((UDP_RECEIVE_IP, UDP_RECEIVE_PORT))
-print("UDP receiver connected:",UDP_RECEIVE_IP," Port:",UDP_RECEIVE_PORT)
+print("UDP receiver connected:", UDP_RECEIVE_IP," Port:", UDP_RECEIVE_PORT)
 
-#Set up UDP output to surface
+# Set up UDP output to surface
 print("Setting up Pi->surface UDP")
-UDP_SEND_IP = "169.254.89.249" #This needs to be the surface IP (Will be automatically assigned during initial code handshake)
+UDP_SEND_IP = "169.254.89.249" # This needs to be the surface IP (Will be automatically assigned during initial code handshake)
 UDP_SEND_PORT = 5005
 sock_send = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
@@ -32,7 +32,7 @@ print("UDP sender connected:",UDP_SEND_IP," Port:",UDP_SEND_PORT)
 print ("Waiting for ping from surface.")
 data, addr = sock_receive.recvfrom(1024) #Read ping
 while (data.decode("utf-8")!="Ready?"):
-    print("Data",str(data),"received, but not ping.")
+    print("Data",str(data),"received, but not ping.\r")
     data, addr = sock_receive.recvfrom(1024)  # Read ping
 #Get IP from surface
 data, addr = sock_receive.recvfrom(1024) #Read IP
@@ -66,7 +66,7 @@ for i in range(INPUT_ARRAY_HEIGHT): #Fill array with string values relating to w
 
 #Reading and writing data to/from the surface via UDP
 def surface_comm(thread_name):
-    global output_array #Allow writing to output_array
+    global output_array # Allow writing to output_array
     while True:
         #Read surface data
         i = 0
@@ -79,12 +79,12 @@ def surface_comm(thread_name):
                 i = 0
 
             if(data.decode("utf-8") == "Ready?"):
-                #If incoming value is the initial ping which suggests the surface code was restarted
+                # If incoming value is the initial ping which suggests the surface code was restarted
                 # Respond to ping and get ready for incoming data
                 print("==========Surface restart detected. Getting ready to receive data.==========")
                 sock_send.sendto(bytes("Ready", "utf-8"), (UDP_SEND_IP, UDP_SEND_PORT))
                 i=0
-                
+
             else:
                 output_array[i][1] = data.decode("utf-8")  # Update current value in the input array
                 #print((output_array[i][0]), ":", output_array[i][1]) #DEBUG: output received value
@@ -104,7 +104,7 @@ def arduino_comm_a(thread_name):
             ser.write((output_array[i][1] + "\n").encode("utf-8"))
             i += 1  # Increment i
             time.sleep(0.01)
-            
+
         #Get arduino sensor data
         i = 0
         while i < INPUT_ARRAY_HEIGHT:
